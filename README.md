@@ -19,19 +19,41 @@ SQLite itself is part of SQLCipher.
 
 This package can be installed with the go get command:
 
-    go get github.com/jackfr0st13/gorm-sqlite-cipher
+    go get github.com/ShaoQ1ang/gorm-sqlite-cipher
 
 ## USAGE
 
 ```go
+package main
+
 import (
-  sqliteEncrypt "github.com/jackfr0st13/gorm-sqlite-cipher"
-  "gorm.io/gorm"
+	"fmt"
+	sqliteEncrypt "github.com/ShaoQ1ang/gorm-sqlite-cipher"
+	"gorm.io/gorm"
 )
-key := "passphrase"
-dbname := "go-sqlcipher.sqlite"
-dbnameWithDSN := dbname + fmt.Sprintf("?_pragma_key=%s&_pragma_cipher_page_size=4096", key)
-db, err := gorm.Open(sqliteEncrypt.Open(dbnameWithDSN), &gorm.Config{})
+
+func main() {
+	key := "3nJ0y7sT3mP0r4ryK3yF0rT3st1nGPurp0s3s"
+	dbname := "test.db"
+	dbnameWithDSN := dbname + fmt.Sprintf("?_pragma_key=%s&_pragma_cipher_page_size=4096", key)
+	db, err := gorm.Open(sqliteEncrypt.Open(dbnameWithDSN), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+
+	type User struct {
+		ID   uint
+		Name string
+	}
+
+	db.AutoMigrate(&User{})
+	db.Create(&User{Name: "Alice"})
+
+	var user User
+	db.First(&user)
+	println("查询结果:", user.Name)
+}
+
 ```
 
 ### License
